@@ -3,7 +3,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 基础表格
+                    <i class="el-icon-lx-cascades"></i> 用户健康信息审核
                 </el-breadcrumb-item>
             </el-breadcrumb>
         </div>
@@ -30,44 +30,41 @@
                 header-cell-class-name="table-header"
                 @selection-change="handleSelectionChange"
             >
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                <el-table-column prop="name" label="用户名"></el-table-column>
-                <el-table-column label="账户余额">
-                    <template slot-scope="scope">￥{{scope.row.money}}</template>
-                </el-table-column>
-                <el-table-column label="头像(查看大图)" align="center">
+<!--                <el-table-column type="selection" width="55" align="center"></el-table-column>-->
+                <el-table-column label="序号" width="55" align="center">
                     <template slot-scope="scope">
-                        <el-image
-                            class="table-td-thumb"
-                            :src="scope.row.thumb"
-                            :preview-src-list="[scope.row.thumb]"
-                        ></el-image>
+                        {{scope.$index + 1}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="address" label="地址"></el-table-column>
-                <el-table-column label="状态" align="center">
+                <el-table-column prop="userid" label="用户id"></el-table-column>
+
+
+<!--                <el-table-column prop="action" label="地址"></el-table-column>-->
+                <el-table-column label="类型" align="center">
                     <template slot-scope="scope">
                         <el-tag
-                            :type="scope.row.state==='成功'?'success':(scope.row.state==='失败'?'danger':'')"
-                        >{{scope.row.state}}</el-tag>
+                            :type="scope.row.type==='康复信息'?'success':'danger'"
+                        >{{scope.row.type}}</el-tag>
                     </template>
                 </el-table-column>
 
-                <el-table-column prop="date" label="注册时间"></el-table-column>
+                <el-table-column prop="content" label="内容"></el-table-column>
+                <el-table-column prop="submitTime" label="提交时间"></el-table-column>
+                <el-table-column prop="auditStatus" label="审核状态"></el-table-column>
+
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button
                             type="text"
                             icon="el-icon-edit"
                             @click="handleEdit(scope.$index, scope.row)"
-                        >编辑</el-button>
-                        <el-button
-                            type="text"
-                            icon="el-icon-delete"
-                            class="red"
-                            @click="handleDelete(scope.$index, scope.row)"
-                        >删除</el-button>
+                        >审核</el-button>
+<!--                        <el-button-->
+<!--                            type="text"-->
+<!--                            icon="el-icon-delete"-->
+<!--                            class="red"-->
+<!--                            @click="handleDelete(scope.$index, scope.row)"-->
+<!--                        >删除</el-button>-->
                     </template>
                 </el-table-column>
             </el-table>
@@ -86,12 +83,26 @@
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
             <el-form ref="form" :model="form" label-width="70px">
-                <el-form-item label="用户名">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="用户id">
+                    <el-input v-model="form.userid" :disabled="true"></el-input>
                 </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
+                <el-form-item label="类型">
+                    <el-input v-model="form.type" :disabled="true"></el-input>
                 </el-form-item>
+                <el-form-item label="内容">
+                    <el-input v-model="form.content" :disabled=true></el-input>
+                </el-form-item>
+                <el-form-item label="提交时间">
+                    <el-input v-model="form.submitTime" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="审核状态">
+                    <el-select v-model="form.auditStatus" class="handle-select mr10">
+<!--                        <el-option key="1" label="待审核" value="待审核"></el-option>-->
+                        <el-option key="2" label="通过" value="通过"></el-option>
+                        <el-option key="3" label="未通过" value="未通过"></el-option>
+                    </el-select>
+                </el-form-item>
+
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="editVisible = false">取 消</el-button>
@@ -127,14 +138,41 @@ export default {
         this.getData();
     },
     methods: {
-        // 获取 easy-mock 的模拟数据
-        getData() {
-            fetchData(this.query).then(res => {
-                console.log(res);
-                this.tableData = res.list;
-                this.pageTotal = res.pageTotal || 50;
-            });
+        test(data){
+            console.log('scope:', data);
+            return 1;
         },
+
+        // 获取数据
+        getData() {
+            this.$axios.get('/Bluetooth/findHealthInfoListByStatus?healthStatus=待审核').then(resp =>{
+                 console.log(resp)
+                if (resp && resp.status === 200){
+                    this.tableData = resp.data
+                    this.pageTotal = resp.data.length
+                    // this.handlePageChange(1); //设置搜索后的第一页
+                }
+             })
+        },
+
+        // 提交数据
+        postData() {
+            this.$axios.post('/Bluetooth/updateOneHealthInfo',{
+                id: this.form.id,
+                userid: this.form.userid,
+                type: this.form.type,
+                content: this.form.content,
+                submitTime: this.form.submitTime,
+                auditStatus: this.form.auditStatus,
+            }).then(resp => {
+                if(resp && resp.status === 200){
+                    this.$message.success(`修改信息成功`);
+                    this.getData()
+                }
+            })
+
+        },
+
         // 触发搜索按钮
         handleSearch() {
             this.$set(this.query, 'pageIndex', 1);
@@ -169,14 +207,26 @@ export default {
         // 编辑操作
         handleEdit(index, row) {
             this.idx = index;
-            this.form = row;
+            // this.form = row;
+            this.form.id = row.id;
+            this.form.userid = row.userid;
+            this.form.type = row.type;
+            this.form.content = row.content;
+            this.form.submitTime = row.submitTime;
+            // this.form.auditStatus = row.auditStatus;
             this.editVisible = true;
+            console.log(index, row);
         },
         // 保存编辑
         saveEdit() {
             this.editVisible = false;
-            this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-            this.$set(this.tableData, this.idx, this.form);
+            // this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+            // this.tableData[this.idx].auditStatus = this.form.auditStatus;
+            this.postData();
+            this.form = {};
+            // this.$set(this.tableData, this.idx, this.form);
+
+
         },
         // 分页导航
         handlePageChange(val) {
