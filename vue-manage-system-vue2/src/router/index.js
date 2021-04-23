@@ -25,9 +25,14 @@ export default new Router({
                     meta: { title: '自定义图标' }
                 },
                 {
-                    path: '/table',
-                    component: () => import(/* webpackChunkName: "table" */ '../components/page/BaseTable.vue'),
-                    meta: { title: '基础表格' }
+                    path: '/AuditHealthInfo',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/AuditHealthInfo.vue'),
+                    meta: { title: '用户健康信息审核' }
+                },
+                {
+                    path: '/AuditHealthInfoHistory',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/AuditHealthInfoHistory.vue'),
+                    meta: { title: '用户健康信息审核记录' }
                 },
                 {
                     path: '/tabs',

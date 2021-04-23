@@ -63,8 +63,13 @@ export default {
                 },
                 {
                     icon: 'el-icon-lx-cascades',
-                    index: 'table',
-                    title: '基础表格'
+                    index: 'AuditHealthInfo',
+                    title: '用户健康信息审核'
+                },
+                {
+                    icon: 'el-icon-lx-cascades',
+                    index: 'AuditHealthInfoHistory',
+                    title: '用户健康信息审核记录'
                 },
                 {
                     icon: 'el-icon-lx-copy',
