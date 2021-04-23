@@ -35,6 +35,11 @@ export default new Router({
                     meta: { title: '用户健康信息审核记录' }
                 },
                 {
+                    path: '/ShowUserHealthInfo',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/ShowUserHealthInfo.vue'),
+                    meta: { title: '用户健康信息审核记录' }
+                },
+                {
                     path: '/tabs',
                     component: () => import(/* webpackChunkName: "tabs" */ '../components/page/Tabs.vue'),
                     meta: { title: 'tab选项卡' }

@@ -72,6 +72,11 @@ export default {
                     title: '用户健康信息审核记录'
                 },
                 {
+                    icon: 'el-icon-lx-cascades',
+                    index: 'ShowUserHealthInfo',
+                    title: '用户健康信息'
+                },
+                {
                     icon: 'el-icon-lx-copy',
                     index: 'tabs',
                     title: 'tab选项卡'
